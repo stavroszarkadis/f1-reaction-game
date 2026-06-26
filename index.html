@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>F1 FIA Lights Reaction Test</title>
+
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #0b0b0d; 
+        color: #ffffff;
+        font-family: 'Arial Black', -apple-system, sans-serif;
+        flex-direction: column;
+        user-select: none;
+        overflow: hidden;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    h1 {
+        margin: 0 0 4px 0;
+        font-style: italic;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+        font-size: 20px;
+        text-align: center;
+        font-weight: 900;
+    }
+
+    .subtitle {
+        color: #ff1801; 
+        margin-bottom: 25px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* Track Layout Container centered perfectly */
+    .track-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* True Vertical Gantry Pod Housing */
+    .gantry {
+        background: #15151e; 
+        padding: 14px 12px;
+        border-radius: 14px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        border: 2px solid #252532;
+        transition: transform 0.1s ease;
+    }
+
+    /* Green lights trigger a slight energetic pulse animation */
+    .gantry.go-pulse {
+        animation: gantryPop 0.2s ease-out;
+    }
+
+    @keyframes gantryPop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.04); }
+        100% { transform: scale(1); }
+    }
+
+    /* Vertical Column Design */
+    .col {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: #0c0c12;
+        padding: 6px;
+        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Fluid Scalable Bulbs */
+    .light {
+        width: 7.5vw;
+        height: 7.5vw;
+        max-width: 32px;
+        max-height: 32px;
+        min-width: 18px;
+        min-height: 18px;
+        border-radius: 50%;
+        transition: background 0.01s, box-shadow 0.01s, transform 0.1s ease;
+    }
+
+    /* Dark/Off Lens */
+    .light.red { background: #220505; }
+    .light.green { background: #041a08; }
+
+    /* Intense Track Glow Effects */
+    .light.red.on {
+        background: #ff1801;
+        box-shadow: 0 0 16px 4px #ff1801, inset 0 0 3px #ffffff;
+    }
+
+    .light.green.on {
+        background: #00ff66;
+        box-shadow: 0 0 20px 6px #00ff66, inset 0 0 3px #ffffff;
+        transform: scale(1.05); /* Make active green lights look slightly larger/closer */
+    }
+
+    .btn-container {
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    button {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-family: 'Arial Black', -apple-system, sans-serif;
+        cursor: pointer;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: white;
+        width: 75%;
+        max-width: 240px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        transition: transform 0.1s ease;
+    }
+    
+    button:active {
+        transform: scale(0.96);
+    }
+
+    #start { background: #ff1801; }
+    #stop {
+        background: #00ff66; 
+        color: #000; 
+        display: none;
+    }
+
+    #result {
+        margin-top: 10px;
+        font-size: 22px;
+        height: 28px;
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Leaderboard Styles */
+    .leaderboard-box {
+        margin-top: 20px;
+        background: #15151e;
+        border: 1px solid #252532;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 80%;
+        max-width: 240px;
+    }
+
+    .leaderboard-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #9e9eb0;
+        text-align: center;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #252532;
+        padding-bottom: 4px;
+    }
+
+    .score-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        color: #d1d1e0;
+        padding: 3px 0;
+    }
+
+    .score-row.rank-1 {
+        color: #00ff66; /* Gold/Top score highlights green */
+    }
+</style>
+</head>
+
+<body>
+
+<h1>F1 Lights Out</h1>
+<div class="subtitle">Reaction Timing System</div>
+
+<div class="track-layout">
+    <div class="gantry" id="mainGantry"></div>
+</div>
+
+<div class="btn-container">
+    <button id="start">Start Sequence</button>
+    <button id="stop">STOP 🏁</button>
+</div>
+
+<div id="result"></div>
+
+<div class="leaderboard-box">
+    <div class="leaderboard-title">🏆 Personal Top 5</div>
+    <div id="leaderboard-list"></div>
+</div>
+
+<script>
+const mainGantry = document.getElementById("mainGantry");
+const startBtn = document.getElementById("start");
+const stopBtn = document.getElementById("stop");
+const result = document.getElementById("result");
+const leaderboardList = document.getElementById("leaderboard-list");
+
+let canClick = false;
+let startTime = 0;
+let timeout;
+let gameActive = false;
+let mainColumns = [];
+
+// Load top times from local device storage
+let highScores = JSON.parse(localStorage.getItem("f1_scores")) || [];
+
+function buildFIAColumns() {
+    for (let i = 0; i < 5; i++) {
+        const col = document.createElement("div");
+        col.className = "col";
+
+        const r1 = document.createElement("div"); r1.className = "light red";
+        const r2 = document.createElement("div"); r2.className = "light red";
+        
+        const g1 = document.createElement("div"); g1.className = "light green";
+        const g2 = document.createElement("div"); g2.className = "light green";
+
+        col.appendChild(r1);
+        col.appendChild(r2);
+        col.appendChild(g1);
+        col.appendChild(g2);
+        mainGantry.appendChild(col);
+
+        mainColumns.push({ reds: [r1, r2], greens: [g1, g2] });
+    }
+}
+
+function updateLeaderboardUI() {
+    leaderboardList.innerHTML = "";
+    if (highScores.length === 0) {
+        leaderboardList.innerHTML = `<div style="text-align:center; font-size:11px; color:#62627a; font-family:sans-serif;">No times recorded yet</div>`;
+        return;
+    }
+    highScores.slice(0, 5).forEach((score, index) => {
+        const row = document.createElement("div");
+        row.className = `score-row ${index === 0 ? 'rank-1' : ''}`;
+        row.innerHTML = `<span>P${index + 1}</span> <span>${score} ms</span>`;
+        leaderboardList.appendChild(row);
+    });
+}
+
+function saveScore(newScore) {
+    highScores.push(newScore);
+    highScores.sort((a, b) => a - b);
+    highScores = highScores.slice(0, 5); // Keep top 5
+    localStorage.setItem("f1_scores", JSON.stringify(highScores));
+    updateLeaderboardUI();
+}
+
+buildFIAColumns();
+updateLeaderboardUI();
+
+function clearAllLights() {
+    mainGantry.classList.remove("go-pulse");
+    mainColumns.forEach(c => {
+        c.reds.forEach(l => l.classList.remove("on"));
+        c.greens.forEach(l => l.classList.remove("on"));
+    });
+}
+
+function sequence() {
+    clearAllLights();
+    result.textContent = "";
+    gameActive = true;
+
+    let step = 0;
+    
+    function redBuild() {
+        if (step < 5) {
+            mainColumns[step].reds.forEach(l => l.classList.add("on"));
+            step++;
+            timeout = setTimeout(redBuild, 1000);
+        } else {
+            const randomDelay = Math.random() * (200 - 10) + 10;
+            
+            timeout = setTimeout(() => {
+                mainGantry.classList.add("go-pulse"); // Trigger visual explosion animation
+                mainColumns.forEach(c => {
+                    c.reds.forEach(l => l.classList.remove("on"));
+                    c.greens.forEach(l => l.classList.add("on"));
+                });
+                
+                canClick = true;
+                stopBtn.style.display = "inline-block";
+                startTime = performance.now();
+            }, randomDelay);
+        }
+    }
+
+    timeout = setTimeout(redBuild, 500);
+}
+
+startBtn.onclick = () => {
+    startBtn.style.display = "none";
+    sequence();
+};
+
+stopBtn.onclick = () => {
+    if (!canClick) return;
+
+    const rt = Math.round(performance.now() - startTime);
+    result.textContent = `${rt} ms`;
+    result.style.color = "#00ff66";
+    saveScore(rt);
+    restart();
+};
+
+document.body.onclick = (e) => {
+    if (!gameActive || canClick) return;
+    if (e.target === startBtn) return;
+
+    result.textContent = "FALSE START";
+    result.style.color = "#ff1801";
+    restart();
+};
+
+function restart() {
+    clearTimeout(timeout);
+    startBtn.style.display = "inline-block";
+    stopBtn.style.display = "none";
+    canClick = false;
+    gameActive = false;
+}
+</script>
+
+</body>
+</html>
